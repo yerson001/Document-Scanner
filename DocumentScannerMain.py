@@ -1,20 +1,21 @@
 import cv2
 import numpy as np
 import utlis
-
+import pytesseract
 
 ########################################################################
 webCamFeed = True
 pathImage = "1.jpg"
+custom_config = r'--oem 3 --psm 6'
 
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
 
-cap.set(10,160)
-heightImg = 640
-widthImg  = 480
+cap.set(10,110)
+heightImg = 340
+widthImg  = 380
 ########################################################################
 
 utlis.initializeTrackbars()
@@ -81,7 +82,7 @@ while True:
 
     # SAVE IMAGE WHEN 's' key is pressed
     if cv2.waitKey(1) & 0xFF == ord('s'):
-        cv2.imwrite("Scanned/myImage"+str(count)+".jpg",imgWarpColored)
+        cv2.imwrite("Scanned/"+str(count)+".jpg",imgWarpColored)
         cv2.rectangle(stackedImage, ((int(stackedImage.shape[1] / 2) - 230), int(stackedImage.shape[0] / 2) + 50),
                       (1100, 350), (0, 255, 0), cv2.FILLED)
         cv2.putText(stackedImage, "Scan Saved", (int(stackedImage.shape[1] / 2) - 200, int(stackedImage.shape[0] / 2)),
@@ -89,3 +90,6 @@ while True:
         cv2.imshow('Result', stackedImage)
         cv2.waitKey(300)
         count += 1
+        print("" , end="\n") 
+        text = pytesseract.image_to_string(stackedImage,config=custom_config)
+        print('\n'+text)
